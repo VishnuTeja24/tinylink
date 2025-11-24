@@ -21,3 +21,8 @@ export const getServerSideProps = async ({ params }) => {
 export default function RedirectPage() {
   return null;
 }
+
+// REQUIRED: Force dynamic SSR on Vercel
+export const config = {
+  runtime: "nodejs",
+};
