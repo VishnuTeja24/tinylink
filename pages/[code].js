@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
 export const getServerSideProps = async ({ params }) => {
   const prisma = (await import('../lib/prisma')).default;
   const { code } = params;
@@ -22,7 +25,6 @@ export default function RedirectPage() {
   return null;
 }
 
-// REQUIRED: Force dynamic SSR on Vercel
 export const config = {
   runtime: "nodejs",
 };
