@@ -1,36 +1,35 @@
-// pages/[code].js
-import prisma from "../lib/prisma";
-
-export default function RedirectPage() {
-  return null; // This page should never render directly
-}
+export const dynamic = "force-dynamic";
 
 export async function getServerSideProps({ params }) {
-  try {
-    const link = await prisma.link.findUnique({
-      where: { code: params.code },
-    });
+  const prisma = (await import("../lib/prisma")).default;
 
-    if (!link) {
-      return { notFound: true };
-    }
+  const link = await prisma.link.findUnique({
+    where: { code: params.code }
+  });
 
-    await prisma.link.update({
-      where: { code: params.code },
-      data: { 
-        clicks: link.clicks + 1,
-        lastClicked: new Date(),
-      },
-    });
-
-    return {
-      redirect: {
-        destination: link.url,
-        permanent: false,
-      },
-    };
-  } catch (error) {
-    console.error("Redirect error:", error);
+  if (!link) {
     return { notFound: true };
   }
+
+  // Update clicks safely
+  await prisma.link.update({
+    where: { code: params.code },
+    data: {
+      clicks: {
+        increment: 1
+      },
+      lastClicked: new Date()
+    }
+  });
+
+  return {
+    redirect: {
+      destination: link.url,
+      permanent: false
+    }
+  };
+}
+
+export default function RedirectPage() {
+  return null;
 }
